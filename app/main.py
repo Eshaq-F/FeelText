@@ -1,8 +1,11 @@
 import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.api.routes import router
 from app.config import settings
@@ -14,13 +17,14 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+_STATIC = Path('static')
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     mode = 'custom' if settings.USE_CUSTOM_MODEL else 'third-party'
     logger.info('Starting FeelText API  [mode: %s] ...', mode)
-    analyzer = get_analyzer()
-    analyzer.load_model()
+    get_analyzer().load_model()
     logger.info('FeelText API ready.')
     yield
     logger.info('Shutting down FeelText API.')
@@ -44,22 +48,23 @@ app.add_middleware(
 app.include_router(router)
 
 
-@app.get('/')
-async def root():
-    mode = 'custom' if settings.USE_CUSTOM_MODEL else 'third-party'
+@app.get('/', include_in_schema=False)
+async def serve_ui():
+    index = _STATIC / 'index.html'
+    if index.exists():
+        return FileResponse(str(index), media_type='text/html')
+    # Fallback JSON when static files are absent
     return {
         'name': 'FeelText',
-        'description': 'Multilingual Sentiment Analysis API',
         'version': '3.0.0',
-        'mode': mode,
         'docs': '/docs',
-        'endpoints': {
-            'analyze': '/analyze',
-            'batch_analyze': '/analyze/batch',
-            'languages': '/languages',
-            'health': '/health',
-        },
+        'ui': 'Static files not found. Place them in the static/ directory.',
     }
+
+
+# Mount after all routes so the wildcard doesn't shadow API endpoints
+if _STATIC.exists():
+    app.mount('/static', StaticFiles(directory=str(_STATIC)), name='static')
 
 
 if __name__ == '__main__':

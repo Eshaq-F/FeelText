@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FeelText</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💬</text></svg>" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+  <!-- ── Header ──────────────────────────────────────────────── -->
+  <header>
+    <div class="container hdr-inner">
+      <div class="logo">
+        <span class="logo-icon">💬</span>
+        <div>
+          <h1 class="logo-title" data-i18n="title">FeelText</h1>
+          <p class="logo-sub" data-i18n="subtitle">Multilingual Sentiment Analysis</p>
+        </div>
+      </div>
+      <div class="hdr-actions">
+
+        <!-- Health badge with tooltip -->
+        <div id="health-badge" class="health-badge">
+          <span class="health-dot"></span>
+          <span class="health-text" data-i18n="loading">Loading…</span>
+          <div class="model-tooltip" id="model-tooltip">
+            <div class="tooltip-model-name" id="tooltip-name">—</div>
+            <div class="tooltip-desc" id="tooltip-desc">—</div>
+          </div>
+        </div>
+
+        <button id="lang-btn" class="lang-btn" onclick="toggleLang()">فا</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Main ────────────────────────────────────────────────── -->
+  <main class="container">
+
+    <!-- Tabs -->
+    <nav class="tabs" role="tablist">
+      <button class="tab active" data-tab="analyze" onclick="switchTab('analyze')" data-i18n="tab_analyze">Analyze</button>
+      <button class="tab"        data-tab="info"    onclick="switchTab('info')"    data-i18n="tab_info">API Info</button>
+    </nav>
+
+    <!-- ── Tab: Analyze ──────────────────────────────────────── -->
+    <section id="tab-analyze" class="tab-pane active">
+      <div class="card">
+        <h2 data-i18n="analyze_title">Analyze Text</h2>
+        <p class="card-desc" data-i18n="analyze_desc">Enter any text to detect its sentiment</p>
+        <textarea
+          id="analyze-input"
+          rows="5"
+          maxlength="5000"
+          placeholder="Type or paste your text here…"
+          data-i18n-ph="analyze_ph"
+          oninput="onInputChange(this)"
+        ></textarea>
+        <div class="row-between mt-sm">
+          <span id="char-count" class="char-count">0 / 5000</span>
+          <button id="analyze-btn" class="btn-primary" onclick="doAnalyze()">
+            <span data-i18n="analyze_btn">Analyze</span>
+          </button>
+        </div>
+      </div>
+      <div id="single-result"></div>
+    </section>
+
+    <!-- ── Tab: Info ──────────────────────────────────────────── -->
+    <section id="tab-info" class="tab-pane">
+      <div id="info-content">
+        <div class="loading-msg" data-i18n="loading">Loading…</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── Footer (sticky bottom) ──────────────────────────────── -->
+  <footer>
+    <div class="container">
+      <p>
+        <span data-i18n="footer_text">FeelText — Multilingual Sentiment Analysis API</span>
+        &nbsp;·&nbsp;
+        <a href="/docs" target="_blank" rel="noopener" data-i18n="footer_docs">Swagger Docs</a>
+      </p>
+    </div>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
